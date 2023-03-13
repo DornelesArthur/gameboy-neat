@@ -75,9 +75,6 @@ class SuperMarioLandGame:
             
 
     def train_ai(self, genome, config):
-        # print(type(genome))
-        # with open("genome.pickle", "wb") as f:
-        #     pickle.dump(genome,f)
         print('[NEURAL NETWORK] Creating')
         network = neat.nn.FeedForwardNetwork.create(genome, config)
 
@@ -121,7 +118,7 @@ if __name__ == "__main__":
     print(f'[STARTING]')
     print(f'[CONFIG] Loading config file')
     local_dir = os.path.dirname(os.path.dirname(__file__))
-    config_path = os.path.join(local_dir, "config.txt")
+    config_path = os.path.join(local_dir, "neat_config.txt")
 
     print(f'[CONFIG] Getting config info')
     config= neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
