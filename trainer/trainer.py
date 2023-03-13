@@ -91,20 +91,12 @@ class SuperMarioLandGame:
         while run:
             if self.env.game_over():
                 run = False
-                # genome.fitness = ((self.env.score/1000)+(self.env.world[0]*100000)+(self.env.world[1]*10000)+(self.env.level_progress/10))/4
-                # genome.fitness = self.env.fitness
             else:
                 i+=1
-                # print(i)
                 if i == 300:
                     if self.env.score == old_score and old_pos >= self.env.level_progress:
-                        # print(f"{i} - if 1 - {self.env.score} - {old_score}")
                         run = False
-                        print
-                        # genome.fitness = ((self.env.score/1000)+(self.env.world[0]*100000)+(self.env.world[1]*10000)+(self.env.level_progress/10))/4
-                        # genome.fitness = self.env.fitness
                 elif i > 300:
-                    # print(f"{i} - if 2 - {self.env.score} - {old_score}")
                     old_score = self.env.score
                     old_pos = self.env.level_progress
                     i = 0
