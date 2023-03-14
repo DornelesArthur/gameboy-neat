@@ -1,0 +1,12 @@
+{
+"resolution_x": 160,
+"resolution_y": 144,
+"remove_upper_info": 0,
+"max_generations" : 2,
+"trainers_num": 5,
+"manager_port": 37259,
+"sleep_time_multiplier":0,
+"check_stagnation": 300,
+"header_size": 64,
+"message_format": "latin1"
+}

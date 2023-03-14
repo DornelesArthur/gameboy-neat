@@ -6,35 +6,39 @@ import threading
 import neat
 import pickle
 import time
-
-HEADER = 64
-PORT = 37259
-TRAINERS_NUMBER = 5
-SERVER = socket.gethostbyname(socket.gethostname())
-ADDR = (SERVER, PORT)
-FORMAT = 'latin1'
+import json
 
 class Manager():
-    def __init__(self):
+    def __init__(self, config_path):
+        config = open(config_path, "r")
+        config_content = json.load(config)
+        self.HEADER = config_content["header_size"]
+        self.PORT = config_content["manager_port"]
+        self.HOST = socket.gethostbyname(socket.gethostname())
+        self.ADDR = (self.HOST, self.PORT)
+        self.TRAINERS_NUMBER = config_content["trainers_num"]
+        self.FORMAT = config_content["message_format"]
+        self.GEN_NUMBERS = config_content["max_generations"]
         print("[CREATING] creating socket")
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.bind((SERVER, PORT))
-        print (f"[STARTED] Server started in {SERVER}!")
-        self.server.listen(TRAINERS_NUMBER)
+        self.server.bind((self.HOST, self.PORT))
+        print (f"[STARTED] Server started in {self.HOST}!")
+        self.server.listen(self.TRAINERS_NUMBER)
         print ("[LISTENING]")
+        
 
     def handle_trainer(self,conn,addr,genome,genome_id):
         genome_bytes = pickle.dumps(genome)
         print(f"[GENOME] Preparing genome")
         genome_size = len(genome_bytes)
-        genome_size = str(genome_size).encode(FORMAT)
-        genome_size += b' ' * (HEADER- len(genome_size))
+        genome_size = str(genome_size).encode(self.FORMAT)
+        genome_size += b' ' * (self.HEADER- len(genome_size))
         print(f"[GENOME] Sending genome size ={genome_size}")
         conn.send(genome_size)
         print(f"[GENOME] Sending {type(genome_bytes)}")
         conn.send(genome_bytes)
-        print(f"[FITNESS] Fitness size ={HEADER}")
-        fitness = int(conn.recv(HEADER))
+        print(f"[FITNESS] Fitness size ={self.HEADER}")
+        fitness = int(conn.recv(self.HEADER))
         print(f"[FITNESS] {fitness} - {id}")
         genome.fitness = fitness
         print(f"[CLOSING] closing socket connection")
@@ -58,7 +62,7 @@ class Manager():
         pop.add_reporter(stats)
         pop.add_reporter(neat.Checkpointer(1))
 
-        best_genome = pop.run(self.eval_genomes, 12)
+        best_genome = pop.run(self.eval_genomes, self.GEN_NUMBERS)
         with open("best.pickle", "wb") as f:
             pickle.dump(best_genome,f)
 
@@ -66,10 +70,11 @@ if __name__ == "__main__":
     print(f'[STARTING]')
     print(f'[CONFIG] Loading config file')
     local_dir = os.path.dirname(os.path.dirname(__file__))
-    config_path = os.path.join(local_dir, "neat_config.txt")
+    config_neat_path = os.path.join(local_dir, "neat_config.txt")
+    config_path = os.path.join(local_dir, "config.json")
 
     print(f'[CONFIG] Getting config info')
-    config= neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
-    manager = Manager()
+    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_neat_path)
+    manager = Manager(config_path)
     print(f'[NEAT] Initializing')
     manager.run_neat(config)
