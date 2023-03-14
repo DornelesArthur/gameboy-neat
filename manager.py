@@ -72,7 +72,7 @@ class Manager():
 if __name__ == "__main__":
     print(f'[STARTING]')
     print(f'[CONFIG] Loading config file')
-    local_dir = os.path.dirname(os.path.dirname(__file__))
+    local_dir = os.path.dirname(__file__)
     config_neat_path = os.path.join(local_dir, "neat_config.txt")
     config_path = os.path.join(local_dir, "config.json")
 

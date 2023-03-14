@@ -2,7 +2,8 @@ FROM python:3.10.8-slim
 
 RUN mkdir /app
 COPY trainer.py /app
-COPY config.txt /app
+COPY neat_config.txt /app
+COPY config.json /app
 COPY SuperMarioLand.gb /app
 WORKDIR /app
 RUN python3 -m pip install --upgrade pip

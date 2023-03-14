@@ -1,0 +1,21 @@
+version: '0.1'
+services:
+  manager:
+    build:
+      context: .
+      dockerfile: manager.dockerfile
+    port:
+      - "37259:37259"
+    networks:
+      - network1
+  trainer:
+    build:
+      context:
+      dockerfile: trainer.dockerfile
+    port:
+      - "37259:37259"
+    networks:
+      - network1
+networks:
+  network1:
+    driver: bridge
