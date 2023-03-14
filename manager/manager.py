@@ -16,14 +16,16 @@ class Manager():
         self.PORT = config_content["manager_port"]
         self.HOST = socket.gethostbyname(socket.gethostname())
         self.ADDR = (self.HOST, self.PORT)
-        self.TRAINERS_NUMBER = config_content["trainers_num"]
+        self.MAX_TRAINERS_NUMBER = config_content["max_trainers_num"]
         self.FORMAT = config_content["message_format"]
         self.GEN_NUMBERS = config_content["max_generations"]
+        self.SLEEP_TIME_MULTIPLIER = config_content["sleep_time_multiplier"]
+        self.gen = 0
         print("[CREATING] creating socket")
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((self.HOST, self.PORT))
         print (f"[STARTED] Server started in {self.HOST}!")
-        self.server.listen(self.TRAINERS_NUMBER)
+        self.server.listen(self.MAX_TRAINERS_NUMBER)
         print ("[LISTENING]")
         
 
@@ -53,7 +55,8 @@ class Manager():
             thread.start()
         while (threading.active_count() != 1):
             print(f"[WAIT] Active Connections: {threading.active_count()-1}")
-            time.sleep(1)
+            time.sleep(1+ (self.gen*self.SLEEP_TIME_MULTIPLIER))
+        self.gen+=1
 
     def run_neat(self,config):
         pop = neat.Population(config)
