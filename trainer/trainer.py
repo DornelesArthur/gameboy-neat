@@ -8,15 +8,19 @@ import numpy as np
 import neat
 import pickle
 import socket
-
-HEADER = 32
-PORT = 37259
-FORMAT = 'latin1'
-SERVER = "127.0.1.1"
-ADDR = (SERVER, PORT)
+import json
 
 class SuperMarioLandGame:
-    def __init__(self):
+    def __init__(self, config_path):
+        config = open(config_path, "r")
+        config_content = json.load(config)
+        self.HEADER = config_content["header_size"]
+        self.PORT = config_content["manager_port"]
+        self.HOST = socket.gethostbyname(socket.gethostname())
+        self.ADDR = (self.HOST, self.PORT)
+        self.TRAINERS_NUMBER = config_content["trainers_num"]
+        self.FORMAT = config_content["message_format"]
+        self.GEN_NUMBERS = config_content["max_generations"]
         file_path = os.path.dirname(os.path.realpath(__file__))
         sys.path.insert(0, file_path + "/..")
         quiet = "--quiet" in sys.argv
@@ -41,10 +45,10 @@ class SuperMarioLandGame:
             try:
                 print(f"[TRYING] Conecting with the server")
                 client_thread_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                client_thread_server.connect(ADDR)
+                client_thread_server.connect(self.ADDR)
 
                 print(f"[GENOMA] Waiting for genoma")
-                genome_size = int(client_thread_server.recv(HEADER).decode(FORMAT))
+                genome_size = int(client_thread_server.recv(self.HEADER).decode(self.FORMAT))
 
                 print(f"[GENOMA] Genoma size received: {genome_size}")
                 genome_bytes = b""
@@ -62,7 +66,7 @@ class SuperMarioLandGame:
                 print(f"[RECEIVE] {type(genome_pickle)}")
 
                 fitness = self.train_ai(genome_pickle, config)
-                message = str(fitness).encode(FORMAT)
+                message = str(fitness).encode(self.FORMAT)
                 print(f"[SENDING] Fitness {message}")
                 client_thread_server.send(message)
                 print(f"[SENDED]")
@@ -118,10 +122,12 @@ if __name__ == "__main__":
     print(f'[STARTING]')
     print(f'[CONFIG] Loading config file')
     local_dir = os.path.dirname(os.path.dirname(__file__))
-    config_path = os.path.join(local_dir, "neat_config.txt")
+    config_neat_path = os.path.join(local_dir, "neat_config.txt")
+    config_path = os.path.join(local_dir, "config.json")
+
 
     print(f'[CONFIG] Getting config info')
-    config= neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
+    config= neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_neat_path)
     print(f'[GAME] Initializing')
-    game = SuperMarioLandGame()
+    game = SuperMarioLandGame(config_path)
     game.start(config)
