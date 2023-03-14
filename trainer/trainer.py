@@ -18,13 +18,17 @@ class SuperMarioLandGame:
         self.PORT = config_content["manager_port"]
         self.HOST = socket.gethostbyname(socket.gethostname())
         self.ADDR = (self.HOST, self.PORT)
-        self.TRAINERS_NUMBER = config_content["trainers_num"]
         self.FORMAT = config_content["message_format"]
         self.GEN_NUMBERS = config_content["max_generations"]
+
+        self.X_RESOLUTION = config_content["resolution_x"]
+        self.Y_RESOLUTION = config_content["resolution_y"]
+        self.STAGNATION_CHECK = config_content["check_stagnation"]
+        self.HIDE_SCREEN = True if config_content["hide_screen"] else False
         file_path = os.path.dirname(os.path.realpath(__file__))
         sys.path.insert(0, file_path + "/..")
         quiet = "--quiet" in sys.argv
-        self.pyboy = PyBoy('SuperMarioLand.gb', window_type="headless" if quiet else "SDL2", window_scale=3, debug=not quiet, game_wrapper=True, disable_renderer=True)
+        self.pyboy = PyBoy('SuperMarioLand.gb', window_type="headless" if quiet else "SDL2", window_scale=3, debug=not quiet, game_wrapper=True, disable_renderer=self.HIDE_SCREEN)
         assert self.pyboy.cartridge_title() == "SUPER MARIOLAN"
         self.env = self.pyboy.game_wrapper()
         self.pyboy.set_emulation_speed(0)
@@ -94,10 +98,10 @@ class SuperMarioLandGame:
                 run = False
             else:
                 i+=1
-                if i == 300:
+                if i == self.STAGNATION_CHECK:
                     if self.env.score == old_score and old_pos >= self.env.level_progress:
                         run = False
-                elif i > 300:
+                elif i > self.STAGNATION_CHECK:
                     old_score = self.env.score
                     old_pos = self.env.level_progress
                     i = 0
