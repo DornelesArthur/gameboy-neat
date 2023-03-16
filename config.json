@@ -9,5 +9,6 @@
 "check_stagnation": 300,
 "header_size": 64,
 "message_format": "latin1",
-"hide_screen": 1
+"hide_screen": 1,
+"manager_ip": "172.17.0.3"
 }

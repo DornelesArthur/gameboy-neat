@@ -16,8 +16,8 @@ class SuperMarioLandGame:
         config_content = json.load(config)
         self.HEADER = config_content["header_size"]
         self.PORT = config_content["manager_port"]
-        self.HOST = socket.gethostbyname(socket.gethostname())
-        self.ADDR = (self.HOST, self.PORT)
+        self.SERVER_IP = config_content["manager_ip"]
+        self.ADDR = (self.SERVER_IP, self.PORT)
         self.FORMAT = config_content["message_format"]
         self.GEN_NUMBERS = config_content["max_generations"]
 
