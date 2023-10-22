@@ -1,21 +1,38 @@
-version: '0.1'
+version: '3'
 services:
   manager:
     build:
       context: .
-      dockerfile: manager.dockerfile
-    port:
-      - "37259:37259"
+    ports:
+      - 37259:37259
     networks:
       - network1
+    links:
+      - trainer
+    environment:
+      - 'dockerfile: manager.dockerfile'
+    volumes:
+      - manager:/home/dorneles/docker_volumes/manager
   trainer:
+    environment:
+      - 'MANAGER_HOST: manager'
+      - 'dockerfile: trainer.dockerfile'
     build:
-      context:
-      dockerfile: trainer.dockerfile
-    port:
+      context: .
+    ports:
       - "37259:37259"
+    links:
+      - manager
     networks:
       - network1
+    depends_on:
+      - manager
+    volumes:
+      - trainer:/home/dorneles/docker_volumes/trainer
 networks:
   network1:
     driver: bridge
+
+volumes:
+  - manager:
+  - trainer:
