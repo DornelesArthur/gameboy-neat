@@ -18,6 +18,7 @@ class SuperMarioLandGame:
         self.PORT = config_content["manager_port"]
         self.SERVER_IP = config_content["manager_ip"]
         self.ADDR = (self.SERVER_IP, self.PORT)
+        print(f'TRYING TO CONNECT TO {self.ADDR}')
         self.FORMAT = config_content["message_format"]
         self.GEN_NUMBERS = config_content["max_generations"]
 
