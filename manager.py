@@ -7,6 +7,7 @@ import neat
 import pickle
 import time
 import json
+from ann_visualizer.visualize import ann_viz;
 
 class Manager():
     def __init__(self, config_path):
@@ -68,6 +69,7 @@ class Manager():
         best_genome = pop.run(self.eval_genomes, self.GEN_NUMBERS)
         with open("best.pickle", "wb") as f:
             pickle.dump(best_genome,f)
+        ann_viz(best_genome, title="My first neural network")
 
 if __name__ == "__main__":
     print(f'[STARTING]')
